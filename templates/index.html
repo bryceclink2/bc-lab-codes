@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Laser Controller</title>
+    
+        <style>
+            body {
+                background: #111;
+                color: white;
+                font-family: Arial;
+                text-align: center;
+                padding-top: 100px;
+            }
+
+            .panel {
+                background: #222;
+                width: 350px;
+                margin: auto;
+                padding: 40px;
+                border-radius: 10px;
+            }
+
+            input{
+                font-size: 20px;
+                padding: 10px;
+                width: 200px;
+            }
+
+            button {
+                margin-top: 20px;
+                padding: 15px 40px;
+                font-size: 20px;
+                background: red;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            button:hover{
+                background: #ff4444;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="panel">
+            <h2>Laser Fire Control</h2>
+            <p>Emission Time (ms)</p>
+            <input id="duration" type="number" value="100"><br>
+            <button onclick="confirmFire()">Emission</button>
+            <!--<button onclick="stopLaser()" style="background: crimson">
+                STOP
+            </button> -->
+            <p>Total Time: <span id="totalTime">0.000</span></p>
+            <p>Emission Time: <span id="emitTime">0.000</span></p>
+            <p id="status"></p>
+        </div>
+        
+
+        <script>
+            let totalInterval
+            let emitInterval
+            let totalStart
+            let emitStart
+
+            function confirmFire() {
+                if(confirm("Fire the Laser")) {
+                    fireLaser();
+                }
+            }
+            function fireLaser(){
+
+                let duration = document.getElementById("duration").value
+
+                document.getElementById("status").innerText="Running..."
+
+                startTotalTimer()
+
+                setTimeout(startEmitTimer, 3000)
+
+                fetch("/fire_laser",{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify({
+                        duration:duration
+                    })
+                })
+                .then(res => res.json())
+                .then(data =>{
+
+                    stopTimers()
+
+                    if(data.status === "complete"){
+                        document.getElementById("status").innerText="Complete"
+                    }
+                    else{
+                        document.getElementById("status").innerText="Error: " + data.message
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("status").innerText="Connection Error: "
+                })
+            }
+
+            function stopLaser() {
+                document.getElementById("status").innerText="Stopping..."
+
+                fetch("/stop_laser", {
+                    method:"POST"
+                })
+            }
+
+            function startTotalTimer() {
+                totalStart = Date.now()
+                totalInterval = setInterval(function() {
+                    let elapsed = (Date.now() - totalStart) / 1000
+
+                    document.getElementById("totalTime").innerText = elapsed.toFixed(3)
+                }, 10)
+            }
+
+            function startEmitTimer() {
+                emitStart = Date.now()
+                emitInterval = setInterval(function() {
+                    let elasped = (Date.now() - emitStart) / 1000
+                    document.getElementById("emitTime").innerText = elasped.toFixed(3)
+                }, 10)
+            }
+
+            function stopTimers() {
+                clearInterval(totalInterval)
+                clearInterval(emitInterval)
+            }
+        </script>
+    </body>
+</html>
