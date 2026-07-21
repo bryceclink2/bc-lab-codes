@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.service import Service
 
 import time
 import threading
 
 app = Flask(__name__)
 
-LASER_PAGE = "http://192.168.3.230" 
+LASER_PAGE = "http://192.168.3.230" # add your specified ip address for the IPG laser
 
 driver = webdriver.Chrome()
 
