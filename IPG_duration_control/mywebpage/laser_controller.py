@@ -8,7 +8,7 @@ import threading
 
 app = Flask(__name__)
 
-LASER_PAGE = "http://192.168.3.230" # add your specified ip address for the IPG laser
+LASER_PAGE = "http://000.000.0.000" # add your specified ip address for the IPG laser
 
 driver = webdriver.Chrome()
 
