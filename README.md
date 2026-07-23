@@ -8,3 +8,6 @@
 ## Research Applications
  - laser emission duration GUI interface
  - thermal imaging processing
+
+ ## Contact
+
